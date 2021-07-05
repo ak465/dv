@@ -1,11 +1,166 @@
-# Sample Snack app
+import React, {Component} from 'react';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import {Header} from 'react-native-elements';
+export default class App extends Component {
+   constructor(){
+     super();
+      this.state = {
+        text: '',
+        isSearchPressed: false,
+        isLoading: false,
+        word: "Loading...",
+        lexicalCategory: '',
+        definition: ""
 
-Open the `App.js` file to start writing some code. You can preview the changes directly on your phone or tablet by scanning the **QR code** or use the iOS or Android emulators. When you're done, click **Save** and share the link!
+      };
+   }
 
-When you're ready to see everything that Expo provides (or if you want to use your own editor) you can **Download** your project and use it with [expo-cli](https://docs.expo.io/get-started/installation).
+     getWord=(text)=> {
+      var text = text.toLowerCase()
+      try {
+        var word = dictionary[text]["word"]
+        var lexicalCategory = dictionary[text]["lexicalCategory"]
+        var definition = dictionary[text]["definition"]
+        this.setState({
+          "word": word,
+          "lexicalCategory": lexicalCategory,
+          "definition": definition
+        })
 
-All projects created in Snack are publicly available, so you can easily share the link to this project via link, or embed it on a web page with the `<>` button.
+      }
+      catch(err){
+        alert("Sorry this word is not in our database")
+        this.setState({
+          "text": '',
+          "isSearchPressed": false
+        })
+      }
+     }
+     
+   
+render(){
+  return(
+      <View Style={{flex:1, boderWidth:2}}>
+        <Header
+           backgroundColor={'purple'}
+           centerComponent={{
+             text: 'Pocket Dictionary',
+             style: {color: '#efff',fontSize: 20},
+           }}
+        />
+        <View style={StyleSheet.inputBoxContainer}>
 
-If you're having problems, you can tweet to us [@expo](https://twitter.com/expo) or ask in our [forums](https://forums.expo.io/c/snack).
+           <TextInput
+             style={StyleSheet.InputButton}
+             onChangeText={text => {
+                this.setState({
+                  text: text,
+                  isSearchPressed: false,
+                  word: "Loading...",
+                  lexicalCategory: "",
+                  examples: [],
+                  definition: ""
+                });
+             }}
+             value={this.state.text}
+          />
 
-Snack is Open Source. You can find the code on the [GitHub repo](https://github.com/expo/snack).
+          <TouchableOpacity
+            styles={styles.searchButton}
+            onPress={() => {
+              this.setState({isSearchPressed: true});
+              this.getWord(this.state.text)
+            }}>
+            <Text styles={styles.searchText}>Search</Text>
+        </TouchableOpacity>
+      </View>
+      <View Style={styles.outputContainer}>
+        <Text style={{fontSize: 20}}>
+          {
+             this.state.isButtonPressed && this.state.word=== "Loading..."
+             ? this.state.word
+             : ""
+          }
+        </Text>
+          {
+             this.state.word !== "Loading..." ?
+             (
+               <View style={{justifyContent: 'center', marginLeft:10 }}>
+                 <View style={styles.detailsContainer}>
+                   <Text style={styles.detailsTitle}>
+                      Word: {" "}
+                    </Text>
+                  </View>
+                  <View style={styles.detailsContainer}>
+                   <Text style={styles.detailsTitle}>
+                      Type: {" "}
+                    </Text>
+                    <Text  style={{fontSize:18}}> 
+                      {this.state.lexicalCategory}
+                  </Text>
+                </View>
+                <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                <Text style={styles.detailsTitle}> 
+                Definition: {" "}
+              </Text>
+              <Text style={{fontSize:18}}>
+                {this.state.definition}
+             </Text>
+            </View>
+          </View>         
+             )
+             :null
+          }
+          </View>
+         </View>
+
+      )
+   }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  inputBoxContainer: {
+    flex: 0.3,
+    alignItems: 'center',
+    justifyContent: 'center'
+
+  },
+  inputBox: {
+    width: '80&',
+    height: 40,
+    alignSelf: 'center',
+    textAlign: 'center',
+    borderWidth: 4,
+  },
+  searchButton: {
+    width: '29%',
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 10,
+    boderWidth: 2,
+    borderRadius: 10,
+  },
+  searchText: {
+    fontSize: 20,
+    fontWeight: 'bold'
+  },
+  outputContainer: {
+    flex: 0.7,
+    alignItems: 'center'
+  },
+  detailsContainer: {
+   flexDirection: 'row',
+   alignItems: 'center'
+  },
+  detailsTitle: {
+    color: 'pink',
+    fontSize: 20,
+    fontWeight:'bold'
+  }
+});
+
+  
